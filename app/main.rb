@@ -77,13 +77,13 @@ def draw_playfield args
 end
 
 def draw_paddles args
-  args.outputs.primitives << [72, 360, 16, 64, 0, 128, 128].solids
-  args.outputs.primitives << [1192, 360, 16, 64, 0, 128, 128].solids
+  args.outputs.primitives << [72, args.state.p1_y - (args.state.p1_h/2), 16, args.state.p1_h, 0, 128, 128].solids
+  args.outputs.primitives << [1192, args.state.p2_y - (args.state.p2_h/2), 16, args.state.p2_h, 0, 128, 128].solids
 end
 
 def tick args
   args.state.p1_score ||= 0
-  args.state.pi_y ||= 360
+  args.state.p1_y ||= 360
   args.state.p1_h ||= 64
   args.state.p2_score ||= 0
   args.state.p2_y ||= 360
