@@ -59,22 +59,35 @@ class Dragon
   end
 end
 
+def new_game args
+  args.state.p1_score = 0
+  args.state.p1_y = 360
+  args.state.p1_h = 64
+  args.state.p2_score = 0
+  args.state.p2_y = 360
+  args.state.p2_h = 64
+end
 
 def draw_playfield args
   args.outputs.primitives << [0, 0, 1280, 720, 0, 0, 0].solids
   args.outputs.primitives << [64, 64, 1152, 592, 0, 200, 0].borders
   args.outputs.primitives << [640, 0, 640, 720, 0, 200, 0].lines
-  args.outputs.primitives << [320, 715, "000", 16, 1, 0, 200, 0].labels
-  args.outputs.primitives << [960, 715, "000", 16, 1, 0, 200, 0].labels
+  args.outputs.primitives << [320, 715, args.state.p1_score.to_s.rjust(3, '0'), 16, 1, 0, 200, 0].labels
+  args.outputs.primitives << [960, 715, args.state.p2_score.to_s.rjust(3, '0'), 16, 1, 0, 200, 0].labels
 end
 
 def draw_paddles args
-  args.outputs.primitives << [72, 360, 16, 64, 0, 128, 128].solids
-  args.outputs.primitives << [1192, 360, 16, 64, 0, 128, 128].solids
-
+  args.outputs.primitives << [72, args.state.p1_y - (args.state.p1_h/2), 16, args.state.p1_h, 0, 128, 128].solids
+  args.outputs.primitives << [1192, args.state.p2_y - (args.state.p2_h/2), 16, args.state.p2_h, 0, 128, 128].solids
 end
 
 def tick args
+  args.state.p1_score ||= 0
+  args.state.p1_y ||= 360
+  args.state.p1_h ||= 64
+  args.state.p2_score ||= 0
+  args.state.p2_y ||= 360
+  args.state.p2_h ||= 64
   draw_playfield args
   draw_paddles args
 
