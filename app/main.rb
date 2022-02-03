@@ -32,9 +32,17 @@ class Dragon
     @size
   end
 
+  def up
+    @vy += 1
+  end
+
+  def down
+    @vy -= 1
+  end
+
   def tick
     @x += 0
-    @y += 0
+    @y += @vy
     if @x > 1280
       @vx = -@vx
       @flip_horizontally = true
@@ -42,9 +50,9 @@ class Dragon
       @vx = -@vx
       @flip_horizontally = false
     end
-    if @y > (720 - @size)
+    if @y > (720 - 64 - @size)
       @vy = -@vy
-    elsif @y < 360
+    elsif @y < 64
       @vy = -@vy
     end
 
@@ -78,27 +86,35 @@ end
 
 def draw_paddles args
   args.outputs.primitives << {x: args.state.p1_dragon.x, y: args.state.p1_dragon.y, w: 64, h: 64,
-                              path: args.state.p1_dragon.sprite,
+                              path: args.state.p1_dragon.sprite, r: 255, g: 255, b: 128,
                               flip_horizontally: args.state.p1_dragon.flip_horizontally}.sprite!
   args.outputs.primitives << {x: args.state.p2_dragon.x, y: args.state.p2_dragon.y, w: 64, h: 64,
                               path: args.state.p2_dragon.sprite,
                               flip_horizontally: args.state.p2_dragon.flip_horizontally}.sprite!
 end
 
+def handle_input args
+  if args.inputs.keyboard.key_down.up
+    args.state.p1_dragon.up
+  elsif args.inputs.keyboard.key_down.down
+    args.state.p1_dragon.down
+  end
+end
+
 def tick args
   sprites ||= ['sprites/misc/dragon-1.png', 'sprites/misc/dragon-2.png', 'sprites/misc/dragon-3.png',
                'sprites/misc/dragon-4.png', 'sprites/misc/dragon-3.png','sprites/misc/dragon-2.png']
   args.state.p1_score ||= 0
-  args.state.p1_y ||= 360
   args.state.p1_h ||= 64
   args.state.p2_score ||= 0
-  args.state.p2_y ||= 360
   args.state.p2_h ||= 64
   args.state.p1_dragon ||= Dragon.new(72, 360, 1, 1, sprites, false, 9)
   args.state.p2_dragon ||= Dragon.new(1192 - 64, 360, 1, 1, sprites, true, 11)
 
   args.state.p1_dragon.tick()
   args.state.p2_dragon.tick()
+
+  handle_input args
 
   draw_playfield args
   draw_paddles args
