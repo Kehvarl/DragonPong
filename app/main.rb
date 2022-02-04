@@ -118,5 +118,4 @@ def tick args
 
   draw_playfield args
   draw_paddles args
-
 end
