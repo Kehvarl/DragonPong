@@ -26,6 +26,7 @@ class Animated < Sprite
     @max_delay = opts[:max_delay]
     @sprites = opts[:sprites]
     @path = sprite
+    super
   end
 
   def sprite
@@ -61,9 +62,7 @@ class Dragon < Animated
 
   def tick
     @y += @vy
-    if @y > (720 - 64 - (@h/2))
-      @vy = -@vy
-    elsif @y < 64
+    if @y > (720 - 64 - (@h/2)) or @y < 64
       @vy = -@vy
     end
 
@@ -72,28 +71,35 @@ class Dragon < Animated
 end
 
 class Ball < Animated
+  attr_accessor :out_of_bounds, :out_left, :out_right
   def initialize opts
-    super
     @vx = opts[:vx]
     @vy = opts[:vy]
     @rotation = 1
+    @out_of_bounds = false
+    @out_left = false
+    @out_right = false
+    super
   end
 
   def tick
     @x += @vx
     @y += @vy
-    if @x > 1280 - 64 -@h
+    @angle += @rotation
+
+    if @x > (1280 - 64 - @h)
       @vx = -@vx
+      @out_of_bounds = true
+      @out_right = true
     elsif @x < 64
       @vx = -@vx
-    end
-    if @y > (720 - 64 -@h)
-      @vy = -@vy
-    elsif @y < 64
-      @vy = -@vy
+      @out_of_bounds = true
+      @out_left = true
     end
 
-    @angle += @rotation
+    if @y > (720 - 64 -@h) or @y < 64
+      @vy = -@vy
+    end
 
     super
   end
