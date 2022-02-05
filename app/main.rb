@@ -1,35 +1,54 @@
-class Dragon
-  def initialize x, y, vx, vy, sprites, flipped = false, max_delay = 10
-    @x ||= x
-    @y ||= y
-    @vy ||= vy
-    @vx ||= vx
-    @flip_horizontally ||= flipped
-    @sprites ||= sprites
-    @current ||= 0
-    @anim_delay ||= 10
-    @max_delay ||= max_delay
-    @size ||= 64
-  end
+class Sprite
+  attr_accessor :x, :y, :z, :w,:h, :path, :angle, :a, :r, :g, :b,
+                :source_x, :source_y, :source_w, :source_h,
+                :tile_x, :tile_y, :tile_w, :tile_h,
+                :flip_horizontally, :flip_vertically,
+                :angle_x, :angle_y,
+                :angle_anchor_x, :angle_anchor_y, :blendmode_enum
 
-  def x
-    @x
+  def primitive_marker
+    :sprite
   end
+end
 
-  def y
-    @y
+class Animated < Sprite
+  def initialize opts
+    @x = opts[:x]
+    @y = opts[:y]
+    @w = opts[:w]
+    @h = opts[:h]
+    @r = opts[:r]
+    @g = opts[:g]
+    @b = opts[:b]
+    @flip_horizontally = opts[:flip_horizontally]
+    @current = 0
+    @anim_delay = opts[:max_delay]
+    @max_delay = opts[:max_delay]
+    @sprites = opts[:sprites]
+    @path = sprite
   end
 
   def sprite
     @sprites[@current]
   end
 
-  def flip_horizontally
-    @flip_horizontally
+  def tick
+    @anim_delay -= 1
+    if @anim_delay == 0
+      @anim_delay = @max_delay
+      @current += 1
+      if @current == @sprites.length
+        @current = 0
+      end
+      @path = sprite
+    end
   end
+end
 
-  def size
-    @size
+class Dragon < Animated
+  def initialize opts
+    super
+    @vy = opts[:vy]
   end
 
   def up
@@ -41,29 +60,14 @@ class Dragon
   end
 
   def tick
-    @x += 0
     @y += @vy
-    if @x > 1280
-      @vx = -@vx
-      @flip_horizontally = true
-    elsif @x < (0 - @size)
-      @vx = -@vx
-      @flip_horizontally = false
-    end
-    if @y > (720 - 64 - @size)
+    if @y > (720 - 64 - (@h/2))
       @vy = -@vy
     elsif @y < 64
       @vy = -@vy
     end
 
-    @anim_delay -= 1
-    if @anim_delay == 0
-      @anim_delay = @max_delay
-      @current += 1
-      if @current == @sprites.length
-        @current = 0
-      end
-    end
+    super
   end
 end
 
@@ -85,12 +89,8 @@ def draw_playfield args
 end
 
 def draw_paddles args
-  args.outputs.primitives << {x: args.state.p1_dragon.x, y: args.state.p1_dragon.y, w: 64, h: 64,
-                              path: args.state.p1_dragon.sprite, r: 255, g: 255, b: 128,
-                              flip_horizontally: args.state.p1_dragon.flip_horizontally}.sprite!
-  args.outputs.primitives << {x: args.state.p2_dragon.x, y: args.state.p2_dragon.y, w: 64, h: 64,
-                              path: args.state.p2_dragon.sprite,
-                              flip_horizontally: args.state.p2_dragon.flip_horizontally}.sprite!
+  args.outputs.primitives << args.state.p1_dragon
+  args.outputs.primitives << args.state.p2_dragon
 end
 
 def handle_input args
@@ -108,8 +108,13 @@ def tick args
   args.state.p1_h ||= 64
   args.state.p2_score ||= 0
   args.state.p2_h ||= 64
-  args.state.p1_dragon ||= Dragon.new(72, 360, 1, 1, sprites, false, 9)
-  args.state.p2_dragon ||= Dragon.new(1192 - 64, 360, 1, 1, sprites, true, 11)
+  # args.state.p1_dragon ||= Dragon.new(72, 360, 1, 1, sprites, false, 9)
+  # args.state.p2_dragon ||= Dragon.new(1192 - 64, 360, 1, 1, sprites, true, 11)
+  args.state.p1_dragon ||= Dragon.new(x: 72, y: 360, h: 64, w: 64, b: 192,
+                                      vy: 1, sprites: sprites, max_delay: 9)
+  args.state.p2_dragon ||= Dragon.new(x: 1144, y: 360, h: 64, w: 64,
+                                      flip_horizontally: true,
+                                      vy: 1, sprites: sprites, max_delay: 11)
 
   args.state.p1_dragon.tick()
   args.state.p2_dragon.tick()
