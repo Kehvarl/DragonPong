@@ -71,6 +71,34 @@ class Dragon < Animated
   end
 end
 
+class Ball < Animated
+  def initialize opts
+    super
+    @vx = opts[:vx]
+    @vy = opts[:vy]
+    @rotation = 1
+  end
+
+  def tick
+    @x += @vx
+    @y += @vy
+    if @x > 1280 - 64 -@h
+      @vx = -@vx
+    elsif @x < 64
+      @vx = -@vx
+    end
+    if @y > (720 - 64 -@h)
+      @vy = -@vy
+    elsif @y < 64
+      @vy = -@vy
+    end
+
+    @angle += @rotation
+
+    super
+  end
+end
+
 def new_game args
   args.state.p1_score = 0
   args.state.p1_y = 360
@@ -93,6 +121,10 @@ def draw_paddles args
   args.outputs.primitives << args.state.p2_dragon
 end
 
+def draw_ball args
+  args.outputs.primitives << args.state.ball
+end
+
 def handle_input args
   if args.inputs.keyboard.key_down.up
     args.state.p1_dragon.up
@@ -104,6 +136,8 @@ end
 def tick args
   sprites ||= ['sprites/misc/dragon-1.png', 'sprites/misc/dragon-2.png', 'sprites/misc/dragon-3.png',
                'sprites/misc/dragon-4.png', 'sprites/misc/dragon-3.png','sprites/misc/dragon-2.png']
+  b_sprites ||= ['sprites/misc/explosion-2.png', 'sprites/misc/explosion-3.png', 'sprites/misc/explosion-4.png',
+                 'sprites/misc/explosion-5.png', 'sprites/misc/explosion-4.png', 'sprites/misc/explosion-3.png']
   args.state.p1_score ||= 0
   args.state.p1_h ||= 64
   args.state.p2_score ||= 0
@@ -113,7 +147,10 @@ def tick args
   args.state.p2_dragon ||= Dragon.new(x: 1144, y: 360, h: 64, w: 64,
                                       flip_horizontally: true,
                                       vy: 1, sprites: sprites, max_delay: 11)
+  args.state.ball ||= Ball.new(x: 720, y: 360, h: 32, w: 32,
+                                      vy: 3, vx: 3, sprites: b_sprites, max_delay: 10)
 
+  args.state.ball.tick()
   args.state.p1_dragon.tick()
   args.state.p2_dragon.tick()
 
@@ -121,4 +158,5 @@ def tick args
 
   draw_playfield args
   draw_paddles args
+  draw_ball args
 end
