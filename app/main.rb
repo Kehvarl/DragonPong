@@ -108,8 +108,6 @@ def tick args
   args.state.p1_h ||= 64
   args.state.p2_score ||= 0
   args.state.p2_h ||= 64
-  # args.state.p1_dragon ||= Dragon.new(72, 360, 1, 1, sprites, false, 9)
-  # args.state.p2_dragon ||= Dragon.new(1192 - 64, 360, 1, 1, sprites, true, 11)
   args.state.p1_dragon ||= Dragon.new(x: 72, y: 360, h: 64, w: 64, b: 192,
                                       vy: 1, sprites: sprites, max_delay: 9)
   args.state.p2_dragon ||= Dragon.new(x: 1144, y: 360, h: 64, w: 64,
