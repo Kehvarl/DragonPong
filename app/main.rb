@@ -99,6 +99,11 @@ def tick args
   args.state.p1_dragon.tick()
   args.state.p2_dragon.tick()
   if args.state.ball.off_screen()
+    if args.state.ball.out_right
+      args.state.p1_score += 1
+    elsif args.state.ball.out_left
+      args.state.p2_score += 1
+    end
     args.state.ball = Ball.new(x: 624, y: 360, h: 32, w: 32,
                                vy: velocity.sample, vx: velocity.sample, sprites: b_sprites, max_delay: 10)
   end
