@@ -25,6 +25,24 @@ def handle_input args
   end
 end
 
+def check_collision a, b
+  distance = (a.center_x - b.center_x) ** 2 + (a.center_y - b.center_y) ** 2
+  if distance <= (a.radius + b.radius) ** 2
+    tangentVector_y = -( a.center_x - b.center_x )
+    tangentVector_x = a.center_y - b.center_y
+    magnitude = Math.sqrt(tangentVector_x **2 + tangentVector_y**2)
+    normalVector_y = tangentVector_y / magnitude
+    normalVector_x = tangentVector_x / magnitude
+    rvx = a.vx
+    rvy = a.vy - b.vy
+    length = (normalVector_x * rvx) + (normalVector_y * rvy)
+    vtx = normalVector_x * length
+    vty = normalVector_y * length
+    a.vx -= (rvx - vtx)
+    a.vy -= 2* (rvy - vty)
+  end
+end
+
 def tick args
   sprites ||= ['sprites/misc/dragon-1.png', 'sprites/misc/dragon-2.png', 'sprites/misc/dragon-3.png',
                'sprites/misc/dragon-4.png', 'sprites/misc/dragon-3.png','sprites/misc/dragon-2.png']
@@ -48,6 +66,9 @@ def tick args
     args.state.ball = Ball.new(x: 624, y: 360, h: 32, w: 32,
                                vy: velocity.sample, vx: velocity.sample, sprites: b_sprites, max_delay: 10)
   end
+
+  check_collision args.state.ball, args.state.p1_dragon
+  check_collision args.state.ball, args.state.p2_dragon
 
   handle_input args
 

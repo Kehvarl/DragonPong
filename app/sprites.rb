@@ -51,10 +51,24 @@ class Animated < Sprite
 end
 
 class Dragon < Animated
+  attr_accessor :vy
   def initialize opts
     super
     @vy = opts[:vy] || 1
   end
+
+  def center_x
+    @x + @h/2
+  end
+
+  def center_y
+    @y + @w/2
+  end
+
+  def radius
+    (@w + @h) /4
+  end
+  
   def up
     @vy += 1
   end
@@ -74,7 +88,7 @@ class Dragon < Animated
 end
 
 class Ball < Animated
-  attr_accessor :out_of_bounds, :out_left, :out_right
+  attr_accessor :out_of_bounds, :out_left, :out_right, :vx, :vy
   def initialize opts
     super
     @vx = opts[:vx] || 1
@@ -88,6 +102,18 @@ class Ball < Animated
 
   def off_screen
     @x < (0 - @w) or @x > 1280
+  end
+
+  def center_x
+    @x + @h/2
+  end
+
+  def center_y
+    @y + @w/2
+  end
+
+  def radius
+    (@w + @h) /4
   end
 
   def tick
