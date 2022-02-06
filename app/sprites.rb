@@ -88,7 +88,7 @@ class Dragon < Animated
 end
 
 class Ball < Animated
-  attr_accessor :out_of_bounds, :out_left, :out_right, :vx, :vy
+  attr_accessor :out_of_bounds, :out_left, :out_right, :vx, :vy, :contact
   def initialize opts
     super
     @vx = opts[:vx] || 1
@@ -98,6 +98,7 @@ class Ball < Animated
     @out_of_bounds = false
     @out_left = false
     @out_right = false
+    @contact = false
   end
 
   def off_screen

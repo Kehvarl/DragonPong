@@ -28,6 +28,14 @@ end
 def check_collision a, b
   distance = (a.center_x - b.center_x) ** 2 + (a.center_y - b.center_y) ** 2
   if distance <= (a.radius + b.radius) ** 2
+    if a.vx > 0
+      a.vx += 1
+    else
+      a.vx -= 1
+    end
+    a.vx = -a.vx
+    return 0
+
     tangentVector_y = -( a.center_x - b.center_x )
     tangentVector_x = a.center_y - b.center_y
     magnitude = Math.sqrt(tangentVector_x **2 + tangentVector_y**2)
@@ -40,6 +48,34 @@ def check_collision a, b
     vty = normalVector_y * length
     a.vx -= (rvx - vtx)
     a.vy -= 2* (rvy - vty)
+  end
+end
+
+def ai args
+  if args.state.p2_dragon.y < (args.state.ball.y )
+    args.state.p2_dragon.vy += 1
+    if args.state.p2_dragon.vy >= 10
+      args.state.p2_dragon.vy = 10
+    end
+  elsif args.state.p2_dragon.y > (args.state.ball.y)
+    args.state.p2_dragon.vy -= 1
+    if args.state.p2_dragon.vy <= -10
+      args.state.p2_dragon.vy = -10
+    end
+  end
+end
+
+def ai_1 args
+  if args.state.p1_dragon.y < (args.state.ball.y)
+    args.state.p1_dragon.vy += 1
+    if args.state.p1_dragon.vy >= 10
+      args.state.p1_dragon.vy = 10
+    end
+  elsif args.state.p1_dragon.y > (args.state.ball.y)
+    args.state.p1_dragon.vy -= 1
+    if args.state.p1_dragon.vy <= -10
+      args.state.p1_dragon.vy = -10
+    end
   end
 end
 
@@ -67,10 +103,13 @@ def tick args
                                vy: velocity.sample, vx: velocity.sample, sprites: b_sprites, max_delay: 10)
   end
 
+  
   check_collision args.state.ball, args.state.p1_dragon
   check_collision args.state.ball, args.state.p2_dragon
 
   handle_input args
+  ai_1 args
+  ai args
 
   draw_playfield args
   draw_paddles args
