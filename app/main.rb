@@ -1,14 +1,5 @@
 require 'app/sprites.rb'
 
-def new_game args
-  args.state.p1_score = 0
-  args.state.p1_y = 360
-  args.state.p1_h = 64
-  args.state.p2_score = 0
-  args.state.p2_y = 360
-  args.state.p2_h = 64
-end
-
 def draw_playfield args
   args.outputs.primitives << [0, 0, 1280, 720, 0, 0, 0].solids
   args.outputs.primitives << [64, 64, 1152, 592, 0, 200, 0].borders
@@ -41,9 +32,7 @@ def tick args
                  'sprites/misc/explosion-5.png', 'sprites/misc/explosion-4.png', 'sprites/misc/explosion-3.png']
   velocity ||= [-4, -3, -2, 2, 3, 4]
   args.state.p1_score ||= 0
-  args.state.p1_h ||= 64
   args.state.p2_score ||= 0
-  args.state.p2_h ||= 64
   args.state.p1_dragon ||= Dragon.new(x: 72, y: 360, h: 64, w: 64, b: 192,
                                       vy: 1, sprites: sprites, max_delay: 9)
   args.state.p2_dragon ||= Dragon.new(x: 1144, y: 360, h: 64, w: 64,
@@ -56,7 +45,6 @@ def tick args
   args.state.p1_dragon.tick()
   args.state.p2_dragon.tick()
   if args.state.ball.off_screen()
-
     args.state.ball = Ball.new(x: 624, y: 360, h: 32, w: 32,
                                vy: velocity.sample, vx: velocity.sample, sprites: b_sprites, max_delay: 10)
   end
