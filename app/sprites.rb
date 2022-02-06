@@ -1,3 +1,8 @@
+##
+# This class defines a Sprite primitive for DRGTK.
+# Contains ALL sprite properties AND primitive_marker
+# From http://docs.dragonruby.org/#---different-sprite-representations
+#
 class Sprite
   attr_accessor :x, :y, :z, :w,:h, :path, :angle, :a, :r, :g, :b,
                 :source_x, :source_y, :source_w, :source_h,
@@ -11,21 +16,23 @@ class Sprite
   end
 end
 
+##
+# This class represents a multi-frame animated Sprite
 class Animated < Sprite
   def initialize opts
     super
-    @x = opts[:x]
-    @y = opts[:y]
-    @w = opts[:w]
-    @h = opts[:h]
-    @r = opts[:r]
-    @g = opts[:g]
-    @b = opts[:b]
-    @flip_horizontally = opts[:flip_horizontally]
+    @x = opts[:x] || 0
+    @y = opts[:y] || 0
+    @w = opts[:w] || 16
+    @h = opts[:h] || 16
+    @r = opts[:r] || 255
+    @g = opts[:g] || 255
+    @b = opts[:b] || 255
+    @flip_horizontally = opts[:flip_horizontally] || false
     @current = 0
-    @anim_delay = opts[:max_delay]
-    @max_delay = opts[:max_delay]
-    @sprites = opts[:sprites]
+    @anim_delay = opts[:max_delay] || 10
+    @max_delay = opts[:max_delay] || 10
+    @sprites = opts[:sprites] || ['sprites/error.png']
     @path = sprite
   end
 
@@ -37,10 +44,7 @@ class Animated < Sprite
     @anim_delay -= 1
     if @anim_delay == 0
       @anim_delay = @max_delay
-      @current += 1
-      if @current == @sprites.length
-        @current = 0
-      end
+      @current = (@current + 1) % @sprites.length
       @path = sprite
     end
   end
@@ -49,9 +53,8 @@ end
 class Dragon < Animated
   def initialize opts
     super
-    @vy = opts[:vy]
+    @vy = opts[:vy] || 1
   end
-
   def up
     @vy += 1
   end
@@ -74,9 +77,9 @@ class Ball < Animated
   attr_accessor :out_of_bounds, :out_left, :out_right
   def initialize opts
     super
-    @vx = opts[:vx]
-    @vy = opts[:vy]
-    @rotation = 1
+    @vx = opts[:vx] || 1
+    @vy = opts[:vy] || 1
+    @rotation = opts[:rotation] || 3
     @angle = 0
     @out_of_bounds = false
     @out_left = false
@@ -93,11 +96,9 @@ class Ball < Animated
     @angle += @rotation
 
     if @x > (1280 - 64 - @h)
-      # @vx = -@vx
       @out_of_bounds = true
       @out_right = true
     elsif @x < 64
-      # @vx = -@vx
       @out_of_bounds = true
       @out_left = true
     end
