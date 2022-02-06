@@ -13,6 +13,7 @@ end
 
 class Animated < Sprite
   def initialize opts
+    super
     @x = opts[:x]
     @y = opts[:y]
     @w = opts[:w]
@@ -61,9 +62,7 @@ class Dragon < Animated
 
   def tick
     @y += @vy
-    if @y > (720 - 64 - (@h/2))
-      @vy = -@vy
-    elsif @y < 64
+    if @y > (720 - 64 - (@h/2)) or @y < 64
       @vy = -@vy
     end
 
@@ -72,28 +71,40 @@ class Dragon < Animated
 end
 
 class Ball < Animated
+  attr_accessor :out_of_bounds, :out_left, :out_right
   def initialize opts
     super
     @vx = opts[:vx]
     @vy = opts[:vy]
     @rotation = 1
+    @angle = 0
+    @out_of_bounds = false
+    @out_left = false
+    @out_right = false
+  end
+
+  def off_screen
+    @x < (0 - @w) or @x > 1280
   end
 
   def tick
     @x += @vx
     @y += @vy
-    if @x > 1280 - 64 -@h
-      @vx = -@vx
+    @angle += @rotation
+
+    if @x > (1280 - 64 - @h)
+      # @vx = -@vx
+      @out_of_bounds = true
+      @out_right = true
     elsif @x < 64
-      @vx = -@vx
-    end
-    if @y > (720 - 64 -@h)
-      @vy = -@vy
-    elsif @y < 64
-      @vy = -@vy
+      # @vx = -@vx
+      @out_of_bounds = true
+      @out_left = true
     end
 
-    @angle += @rotation
+    if @y > (720 - 64 -@h) or @y < 64
+      @vy = -@vy
+    end
 
     super
   end
@@ -138,6 +149,7 @@ def tick args
                'sprites/misc/dragon-4.png', 'sprites/misc/dragon-3.png','sprites/misc/dragon-2.png']
   b_sprites ||= ['sprites/misc/explosion-2.png', 'sprites/misc/explosion-3.png', 'sprites/misc/explosion-4.png',
                  'sprites/misc/explosion-5.png', 'sprites/misc/explosion-4.png', 'sprites/misc/explosion-3.png']
+  velocity ||= [-4, -3, -2, 2, 3, 4]
   args.state.p1_score ||= 0
   args.state.p1_h ||= 64
   args.state.p2_score ||= 0
@@ -147,12 +159,17 @@ def tick args
   args.state.p2_dragon ||= Dragon.new(x: 1144, y: 360, h: 64, w: 64,
                                       flip_horizontally: true,
                                       vy: 1, sprites: sprites, max_delay: 11)
-  args.state.ball ||= Ball.new(x: 720, y: 360, h: 32, w: 32,
-                                      vy: 3, vx: 3, sprites: b_sprites, max_delay: 10)
+  args.state.ball ||= Ball.new(x: 624, y: 360, h: 32, w: 32,
+                                      vy: velocity.sample, vx: velocity.sample, sprites: b_sprites, max_delay: 10)
 
   args.state.ball.tick()
   args.state.p1_dragon.tick()
   args.state.p2_dragon.tick()
+  if args.state.ball.off_screen()
+
+    args.state.ball = Ball.new(x: 624, y: 360, h: 32, w: 32,
+                               vy: velocity.sample, vx: velocity.sample, sprites: b_sprites, max_delay: 10)
+  end
 
   handle_input args
 
