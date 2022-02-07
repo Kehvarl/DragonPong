@@ -51,30 +51,16 @@ def check_collision a, b
   end
 end
 
-def ai args
-  if args.state.p2_dragon.y < (args.state.ball.y )
-    args.state.p2_dragon.vy += 1
-    if args.state.p2_dragon.vy >= 10
-      args.state.p2_dragon.vy = 10
+def ai ball, dragon
+  if dragon.y < (ball.y )
+    dragon.vy += 1
+    if dragon.vy >= 10
+      dragon.vy = 10
     end
-  elsif args.state.p2_dragon.y > (args.state.ball.y)
-    args.state.p2_dragon.vy -= 1
-    if args.state.p2_dragon.vy <= -10
-      args.state.p2_dragon.vy = -10
-    end
-  end
-end
-
-def ai_1 args
-  if args.state.p1_dragon.y < (args.state.ball.y)
-    args.state.p1_dragon.vy += 1
-    if args.state.p1_dragon.vy >= 10
-      args.state.p1_dragon.vy = 10
-    end
-  elsif args.state.p1_dragon.y > (args.state.ball.y)
-    args.state.p1_dragon.vy -= 1
-    if args.state.p1_dragon.vy <= -10
-      args.state.p1_dragon.vy = -10
+  elsif dragon.y > (ball.y)
+    dragon.vy -= 1
+    if dragon.vy <= -10
+      dragon.vy = -10
     end
   end
 end
@@ -98,18 +84,23 @@ def tick args
   args.state.ball.tick()
   args.state.p1_dragon.tick()
   args.state.p2_dragon.tick()
+
   if args.state.ball.off_screen()
+    if args.state.ball.out_right
+      args.state.p1_score += 1
+    elsif args.state.ball.out_left
+      args.state.p2_score += 1
+    end
     args.state.ball = Ball.new(x: 624, y: 360, h: 32, w: 32,
                                vy: velocity.sample, vx: velocity.sample, sprites: b_sprites, max_delay: 10)
   end
 
-  
   check_collision args.state.ball, args.state.p1_dragon
   check_collision args.state.ball, args.state.p2_dragon
 
   handle_input args
-  ai_1 args
-  ai args
+  ai args.state.ball, args.state.p1_dragon
+  ai args.state.ball, args.state.p2_dragon
 
   draw_playfield args
   draw_paddles args
