@@ -58,11 +58,11 @@ class Dragon < Animated
   end
 
   def center_x
-    @x + @h/2
+    @x + @w/2
   end
 
   def center_y
-    @y + @w/2
+    @y + @h/2
   end
 
   def radius
@@ -106,11 +106,11 @@ class Ball < Animated
   end
 
   def center_x
-    @x + @h/2
+    @x + @w/2
   end
 
   def center_y
-    @y + @w/2
+    @y + @h/2
   end
 
   def radius
