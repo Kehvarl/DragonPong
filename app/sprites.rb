@@ -57,6 +57,10 @@ class Dragon < Animated
     @vy = opts[:vy] || 1
   end
 
+  def center
+    [center_x, center_y]
+  end
+
   def center_x
     @x + @w/2
   end
@@ -103,6 +107,10 @@ class Ball < Animated
 
   def off_screen
     @x < (0 - @w) or @x > 1280
+  end
+
+  def center
+    [center_x, center_y]
   end
 
   def center_x
