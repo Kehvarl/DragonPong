@@ -87,6 +87,13 @@ class Dragon < Animated
       @vy = -@vy
     end
 
+
+    if @vy > 0
+      @angle  = 15
+    elsif @vy < 0
+      @angle  = -15
+    end
+
     super
   end
 end
