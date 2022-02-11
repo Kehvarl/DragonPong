@@ -4,13 +4,13 @@ def draw_playfield args
   args.outputs.primitives << [0, 0, 1280, 720, 0, 0, 0].solids
   args.outputs.primitives << [64, 64, 1152, 592, 0, 200, 0].borders
   args.outputs.primitives << [640, 0, 640, 720, 0, 200, 0].lines
-  args.outputs.primitives << [320, 715, args.state.p1_score.to_s.rjust(3, '0'), 16, 1, 0, 200, 0].labels
-  args.outputs.primitives << [960, 715, args.state.p2_score.to_s.rjust(3, '0'), 16, 1, 0, 200, 0].labels
+  args.outputs.primitives << [320, 715, args.state.p1.score, 16, 1, 0, 200, 0].labels
+  args.outputs.primitives << [960, 715, args.state.p2.score, 16, 1, 0, 200, 0].labels
 end
 
 def draw_paddles args
-  args.outputs.primitives << args.state.p1_dragon
-  args.outputs.primitives << args.state.p2_dragon
+  args.outputs.primitives << args.state.p1
+  args.outputs.primitives << args.state.p2
 end
 
 def draw_ball args
@@ -40,7 +40,7 @@ def check_collision a, b
     length = (normalVector_x * rvx) + (normalVector_y * rvy)
     vtx = normalVector_x * length
     vty = normalVector_y * length
-    a.vx -= (rvx - vtx)
+    a.vx -= 2.25 * (rvx - vtx)
     a.vy -= 2* (rvy - vty)
   end
 end
@@ -65,19 +65,18 @@ def tick args
   b_sprites ||= ['sprites/misc/explosion-2.png', 'sprites/misc/explosion-3.png', 'sprites/misc/explosion-4.png',
                  'sprites/misc/explosion-5.png', 'sprites/misc/explosion-4.png', 'sprites/misc/explosion-3.png']
   velocity ||= [-4, -3, -2, 2, 3, 4]
-  args.state.p1_score ||= 0
-  args.state.p2_score ||= 0
-  args.state.p1_dragon ||= Dragon.new(x: 72, y: 360, h: 64, w: 64, b: 192,
-                                      vy: 1, sprites: sprites, max_delay: 9)
-  args.state.p2_dragon ||= Dragon.new(x: 1144, y: 360, h: 64, w: 64,
-                                      flip_horizontally: true,
-                                      vy: 1, sprites: sprites, max_delay: 11)
+
+  args.state.p1 ||= Player.new(x: 72, y: 360, h: 64, w: 64, b: 192,
+                               vy: 1, sprites: sprites, max_delay: 9)
+  args.state.p2 ||= Player.new(x: 1144, y: 360, h: 64, w: 64,
+                               flip_horizontally: true,
+                               vy: 1, sprites: sprites, max_delay: 11)
   args.state.ball ||= Ball.new(x: 624, y: 360, h: 32, w: 32,
                                       vy: velocity.sample, vx: velocity.sample, sprites: b_sprites, max_delay: 10)
 
   args.state.ball.tick()
-  args.state.p1_dragon.tick()
-  args.state.p2_dragon.tick()
+  args.state.p1.tick()
+  args.state.p2.tick()
 
   if args.state.ball.off_screen()
     if args.state.ball.out_right
@@ -89,12 +88,12 @@ def tick args
                                vy: velocity.sample, vx: velocity.sample, sprites: b_sprites, max_delay: 10)
   end
 
-  check_collision args.state.ball, args.state.p1_dragon
-  check_collision args.state.ball, args.state.p2_dragon
+  check_collision args.state.ball, args.state.p1
+  check_collision args.state.ball, args.state.p2
 
   handle_input args
-  ai args.state.ball, args.state.p1_dragon
-  ai args.state.ball, args.state.p2_dragon
+  ai args.state.ball, args.state.p1
+  ai args.state.ball, args.state.p2
 
   draw_playfield args
   draw_paddles args
