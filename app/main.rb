@@ -28,13 +28,7 @@ end
 def check_collision a, b
   distance = (a.center_x - b.center_x) ** 2 + (a.center_y - b.center_y) ** 2
   if distance <= (a.radius + b.radius) ** 2
-    if a.vx > 0
-      a.vx += 0
-    else
-      a.vx -= 0
-    end
-    a.vx = -a.vx
-    return 0
+
 
     tangentVector_y = -( a.center_x - b.center_x )
     tangentVector_x = a.center_y - b.center_y
