@@ -113,7 +113,7 @@ class Ball < Animated
   end
 
   def off_screen
-    @x < (0 - @w) or @x > 1280
+    @x < (0 - @w) or @x > 1280 or @y < (0 - @h) or @y > 720
   end
 
   def center
@@ -150,5 +150,16 @@ class Ball < Animated
     end
 
     super
+  end
+end
+
+class Player < Dragon
+  def initialize opts
+    super
+    @score = opts[:score] || 0
+  end
+
+  def score
+    @score.to_s.rjust(3, '0')
   end
 end
