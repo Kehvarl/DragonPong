@@ -94,6 +94,10 @@ class Dragon < Animated
       @angle  = -15
     end
 
+    if @flip_horizontally
+      @angle = -@angle
+    end
+
     super
   end
 end
@@ -154,12 +158,13 @@ class Ball < Animated
 end
 
 class Player < Dragon
+  attr_accessor :score
   def initialize opts
     super
     @score = opts[:score] || 0
   end
 
-  def score
+  def display
     @score.to_s.rjust(3, '0')
   end
 end
