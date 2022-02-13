@@ -4,8 +4,8 @@ def draw_playfield args
   args.outputs.primitives << [0, 0, 1280, 720, 0, 0, 0].solids
   args.outputs.primitives << [64, 64, 1152, 592, 0, 200, 0].borders
   args.outputs.primitives << [640, 0, 640, 720, 0, 200, 0].lines
-  args.outputs.primitives << [320, 715, args.state.p1.score, 16, 1, 0, 200, 0].labels
-  args.outputs.primitives << [960, 715, args.state.p2.score, 16, 1, 0, 200, 0].labels
+  args.outputs.primitives << [320, 715, args.state.p1.display, 16, 1, 0, 200, 0].labels
+  args.outputs.primitives << [960, 715, args.state.p2.display, 16, 1, 0, 200, 0].labels
 end
 
 def draw_paddles args
@@ -19,9 +19,9 @@ end
 
 def handle_input args
   if args.inputs.keyboard.key_down.up
-    args.state.p1_dragon.up
+    args.state.p1.up
   elsif args.inputs.keyboard.key_down.down
-    args.state.p1_dragon.down
+    args.state.p1.down
   end
 end
 
@@ -80,9 +80,9 @@ def tick args
 
   if args.state.ball.off_screen()
     if args.state.ball.out_right
-      args.state.p1_score += 1
+      args.state.p1.score += 1
     elsif args.state.ball.out_left
-      args.state.p2_score += 1
+      args.state.p2.score += 1
     end
     args.state.ball = Ball.new(x: 624, y: 360, h: 32, w: 32,
                                vy: velocity.sample, vx: velocity.sample, sprites: b_sprites, max_delay: 10)
